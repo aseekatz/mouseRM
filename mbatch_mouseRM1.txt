@@ -1,0 +1,54 @@
+##mbatch for mouse relapse data
+#10.28.14
+
+make.contigs(file=mouseRM1.files, processors=10)
+summary.seqs(fasta=mouseRM1.trim.contigs.fasta, processors=10)
+screen.seqs(fasta=mouseRM1.trim.contigs.fasta, group=mouseRM1.contigs.groups, maxambig=0, maxlength=275, processors=10)
+unique.seqs(fasta=mouseRM1.trim.contigs.good.fasta)
+count.seqs(name=mouseRM1.trim.contigs.good.names, group=mouseRM1.contigs.good.groups)
+summary.seqs(count=mouseRM1.trim.contigs.good.count_table, processors=10)
+pcr.seqs(fasta=silva.bacteria.fasta, start=11894, end=25319, keepdots=F, processors=10)
+system(mv silva.bacteria.pcr.fasta silva.v4.fasta)
+summary.seqs(fasta=silva.v4.fasta, processors=10)
+align.seqs(fasta=mouseRM1.trim.contigs.good.unique.fasta, reference=silva.v4.fasta, processors=10)
+summary.seqs(fasta=mouseRM1.trim.contigs.good.unique.align, count=mouseRM1.trim.contigs.good.count_table, processors=10)
+screen.seqs(fasta=mouseRM1.trim.contigs.good.unique.align, count=mouseRM1.trim.contigs.good.count_table, summary=mouseRM1.trim.contigs.good.unique.summary, start=1968, end=11550, maxhomop=8, processors=10)
+summary.seqs(fasta=current, count=current, processors=10)
+filter.seqs(fasta=mouseRM1.trim.contigs.good.unique.good.align, vertical=T, trump=., processors=10)
+unique.seqs(fasta=mouseRM1.trim.contigs.good.unique.good.filter.fasta, count=mouseRM1.trim.contigs.good.good.count_table)
+pre.cluster(fasta=mouseRM1.trim.contigs.good.unique.good.filter.unique.fasta, count=mouseRM1.trim.contigs.good.unique.good.filter.count_table, diffs=2, processors=10)
+chimera.uchime(fasta=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.fasta, count=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.count_table, dereplicate=t, processors=10)
+remove.seqs(fasta=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.fasta, accnos=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.uchime.accnos)
+summary.seqs(fasta=current, count=current, processors=10)
+remove.lineage(fasta=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.fasta, count=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.uchime.pick.count_table, taxonomy=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.taxonomy, taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota)
+count.seqs(name=current, group=current)
+classify.seqs(fasta=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta, count=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.uchime.pick.pick.count_table, reference=trainset9_032012.pds.fasta, taxonomy=trainset9_032012.pds.tax, cutoff=80)
+
+remove.groups(count=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.uchime.pick.count_table, fasta=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.fasta, groups=d10_1008_2)
+dist.seqs(fasta=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta, cutoff=0.15)
+cluster(column=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.dist, count=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.uchime.pick.pick.count_table)
+make.shared(list=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.an.unique_list.list, count=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.uchime.pick.pick.count_table, label=0.03)
+classify.otu(list=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.an.unique_list.list, count=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.uchime.pick.pick.count_table, taxonomy=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pds.wang.taxonomy, label=0.03)
+phylotype(taxonomy=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pds.wang.taxonomy)
+classify.otu(list=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.pick.tx.list, count=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.uchime.pick.pick.pick.count_table, taxonomy=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pds.wang.taxonomy, label=1)
+
+##extra commands for mouseRM1.plate in mothur:
+dist.shared(shared=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.an.unique_list.shared, calc=thetayc-jclass)
+
+##to get thetayc distances:
+pcoa(phylip=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.an.unique_list.jclass.0.03.lt.dist)
+pcoa(phylip=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.an.unique_list.thetayc.0.03.lt.dist)
+nmds(phylip=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.an.unique_list.thetayc.0.03.lt.dist, mindim=4, maxdim=4)
+##Output for these=.axes and .loadings for pcoa
+        
+#for shared distances:
+summary.shared(shared=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.an.unique_list.shared, calc=sharedsobs-braycurtis-spearman-thetayc)
+
+#for diversity metrics (single):
+summary.single(shared=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.an.unique_list.shared, calc=simpsoneven-simpson-invsimpson-shannon-npshannon-sobs-chao-nseqs)
+
+amova(phylip=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.an.unique_list.thetayc.0.03.lt.dist, design=mouseRM_group.time.design.txt)
+metastats(shared=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.an.unique_list.shared, design=mouseRM_group.time.design.txt, processors=10)
+
+corr.axes(axes=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.an.unique_list.thetayc.0.03.lt.nmds.axes, shared=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.an.unique_list.shared, method=spearman, numaxes=3)
+corr.axes(axes=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.an.unique_list.thetayc.0.03.lt.pcoa.axes, shared=mouseRM1.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.an.unique_list.shared, method=spearman, numaxes=3)

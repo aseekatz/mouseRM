@@ -40,7 +40,7 @@ barg<-as.data.frame(t(rm_g))
 barg<- barg[, order(-unlist(lapply(barg, mean)))]
 barg$sampleID<-rownames(barg)
 bar<-merge(mouse.var, barg, by.x=c("sampleID"), by.y=c("sampleID"))
-write.table(bar, file="mouseRM_bar.graphs.txt", quote=FALSE, sep="\t", col.names=NA)
+#write.table(bar, file="mouseRM_bar.graphs.txt", quote=FALSE, sep="\t", col.names=NA)
 
 # first, get the median and min/max for your groups:
 #colnames(bar)			#this will show you the correct columns to choose (I am choosing the top 9 since I ordered by mean earlier)
@@ -206,3 +206,10 @@ write.table(figC_stats_filtered, file="barplots_stats/figC_stats_filtered.txt", 
 
 
 ```
+
+
+# to get number of time points (n=) per groupings in bargraph, as per reviewer comments:
+length<- sapply(levels(bar$bargroup), function(class) sapply(bar[bar$bargroup == class, c("unclassified_Porphyromonadaceae", "Bacteroides")], length))
+
+
+pre<-bar[bar$bargroup==c("pre"), ]

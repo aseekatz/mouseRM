@@ -635,3 +635,18 @@ arrows(f, f.ave-f.sd, f, f.ave+f.sd, length=0.05, angle=90, code=3)	#adds sd to 
 axis(1, at=f, labels=f)
 
 ```
+
+# 6.8.15
+# to get average thetayc difference between all pre-abx mice (reported in IAI reviewer comments):
+```{r}
+don1<-mshare[(mshare$day1==-8) & (mshare$day2==-7), ]
+don2<-mshare[(mshare$day1==-7) & (mshare$day2==-8), ]
+don3<-mshare[(mshare$day1==-8) & (mshare$day2==-8), ]
+don4<-mshare[(mshare$day1==-7) & (mshare$day2==-7), ]
+a1<-rbind(don1, don2, don3, don4)
+a1$DAY<-c(-1)
+a1$GROUP<-c("all_donor")
+mean(a1$thetayc)
+# [1] 0.3577029
+```
+

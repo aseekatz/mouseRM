@@ -347,4 +347,51 @@ axis(1, at=f1.all$day, labels=f1.all$day)
 
 ```
 
+# 6.8.15
+# to test for statistical differences between FMTs on different dates (reported in IAI reviewer comments):
+```{r}
 
+#previously created table from above for thetayc pcoa/nmdd/diversity:
+mouse.div<-read.table(file="mouseRM_div.thetayc.txt", header=TRUE)
+
+# let's remove the 'abx_only' group for the time being, since we are interested in the FMT vs. no_FMT mice:
+sub.mouse.div<-subset(mouse.div, (subset=treat %in% c("FMT", "no_FMT")))
+
+div.split<-split(sub.mouse.div, sub.mouse.div$day)
+div.d16<-div.split$'16'
+div.d19<-div.split$'19'
+
+d16<-split(div.d16, div.d16$treatment)
+fmt2<-d16$'FMT2'
+fmt3<-d16$'FMT3'
+fmt4<-d16$'FMT4'
+all<-rbind(fmt2, fmt3, fmt4)
+
+d19<-split(div.d19, div.d19$treatment)
+fmt2<-d19$'FMT2'
+fmt3<-d19$'FMT3'
+fmt4<-d19$'FMT4'
+all19<-rbind(fmt2, fmt3, fmt4)
+
+d22<-split(div.d22, div.d22$treatment)
+fmt2<-d22$'FMT2'
+fmt3<-d22$'FMT3'
+fmt4<-d22$'FMT4'
+all22<-rbind(fmt2, fmt3, fmt4)
+
+d22<-split(div.d22, div.d22$treatment)
+fmt2<-d22$'FMT2'
+fmt3<-d22$'FMT3'
+fmt4<-d22$'FMT4'
+all22<-rbind(fmt2, fmt3, fmt4)
+
+d27<-split(div.d27, div.d27$treatment)
+fmt2<-d27$'FMT2'
+fmt3<-d27$'FMT3'
+fmt4<-d27$'FMT4'
+all27<-rbind(fmt2, fmt3, fmt4)
+
+kruskal.test(invsimpson~treatment, data=all)			#d16 is still different
+kruskal.test(invsimpson~treatment, data=all19)			#however, by the time C. diff is 'cleared', no statistical difference between different FMT days
+kruskal.test(invsimpson~treatment, data=all22)
+kruskal.test(invsimpson~treatment, data=all27)
